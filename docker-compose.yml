@@ -1,0 +1,33 @@
+#version: "3"
+#
+services:
+  bedrock-server:
+    image: itzg/minecraft-bedrock-server
+    container_name: minecraft-server
+    environment:
+      EULA: "TRUE"
+      MEMORY: 2G
+      SERVER_NAME: MinecraftServer
+      LEVEL_NAME: Oyazi
+      GAMEMODE: survival
+      DIFFICULTY: normal
+      TZ: Asia/Tokyo
+    ports:
+      - 19132:19132/udp
+    volumes:
+      - ./data:/data
+    stdin_open: true
+    tty: true
+  minecraft_backup:
+    container_name: minecraft-backup
+    image: kaiede/minecraft-bedrock-backup
+    restart: always
+    tty: true
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+      - ./backups:/backups
+      - ./data:/server
+    depends_on:
+      - "bedrock-server"
+    environment:
+      TZ: Asia/Tokyo
